@@ -8,7 +8,7 @@ TMAs = ["TMA1","TMA1","TMA3","TMA4","TMA2","TMA2","TMA2","TMA1","TMA1","TMA1","T
         "TMA1","TMA2","TMA4","TMA4","TMA4","TMA4","TMA3","TMA3","TMA2"]
 
 #scratch_dir= "/data/scratch/projects/punim0741/"
-raw_detected_tx_dir = "/mnt/beegfs/mccarthy/backed_up/general/rlyu/Dataset/LFST_2022/Xenium/fullPanelQC/"
+raw_detected_tx_dir = "/Spatial_PF_rep/data/"
 scratch_ln = "scratch_ln/"
 rule all:
     input:
