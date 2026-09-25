@@ -56,8 +56,6 @@ rule build_fulllgraph_bydmax:
         cpus = 1,
         mem = get_mem_mb_large,
         gpus =0 
-    conda:
-        "/mnt/beegfs/mccarthy/backed_up/general/rlyu/Software/mambaForge/mambaforge/envs/graphsageAug"
     shell:
         """
             python -u {input.script} {wildcards.vname} {wildcards.TMA} {input.fullpn} {input.xenium_gene_panel} \
@@ -81,8 +79,6 @@ rule filter_compoments_and_subgraph:
         cpus = 1,
         mem = get_mem_mb,
         gpus = 0
-    conda:
-        "/mnt/beegfs/mccarthy/backed_up/general/rlyu/Software/mambaForge/mambaforge/envs/graphsageAug"
     shell:
         """
             python {input.script} {wildcards.vname} {input.full_graph} {params.remove_comp_min_n} {wildcards.nroots} {output.subgraph3NB} {output.subgraph3NB_rootnodesID} {params.text_log} 2>> {log}
@@ -104,8 +100,6 @@ rule merge_subgraphs:
         "output/xenium/fullPanel/graphs/benchmarks/xenium_subgraph3NB{nroots}_aug2023/dmax{k}/mergeSubGraphsToSG_dmax{k}.benchmark.txt"
     log:
         "output/xenium/fullPanel/graphs/logs/3NB/xenium_subgraph3NB{nroots}_aug2023/dmax{k}/mergeSubGraphsToSG_dmax{k}.log"
-    conda:
-        "/mnt/beegfs/mccarthy/backed_up/general/rlyu/Software/mambaForge/mambaforge/envs/graphsageAug"
     params:
         subgraph_dir = scratch_ln+"xenium_subgraph3NB{nroots}_aug2023/dmax{k}/",
         subgraphs = ",".join(expand([scratch_ln+"xenium_subgraph3NB{{nroots}}_aug2023/dmax{{k}}/{vname}_{TMA}_dmax{{k}}.subgraph3NB.gpickle"],zip, vname=samples, TMA=TMAs)),
@@ -144,8 +138,6 @@ rule trainUsingMergedgraph:
         trained_emModel  = "output/xenium/fullPanel/graphs/3NB/xenium_subgraph3NB{nroots}_aug2023/dmax{k}/saved_model/embmodel"
     log:
         "output/xenium/fullPanel/graphs/3NB/xenium_subgraph3NB{nroots}_aug2023/dmax{k}/model_training_dmax{k}.log"
-    conda:
-        "/mnt/beegfs/mccarthy/backed_up/general/rlyu/Software/mambaForge/mambaforge/envs/graphsageAug"
     shell:
         """
            export LD_LIBRARY_PATH="/mnt/beegfs/mccarthy/backed_up/general/rlyu/Software/mambaForge/mambaforge/envs/graphsageAug/lib/python3.8/site-packages/tensorrt/:$LD_LIBRARY_PATH"
@@ -171,8 +163,6 @@ rule embedd_graph:
         gpus = 0
     benchmark:
         "output/xenium/fullPanel/graphs/3NB/xenium_subgraph3NB{nroots}_aug2023/dmax{k}/min10/logs/{vname}_50_embeddings_{TMA}.ben.txt"
-    conda:
-        "/mnt/beegfs/mccarthy/backed_up/general/rlyu/Software/mambaForge/mambaforge/envs/graphsageAug"
     log:
         "output/xenium/fullPanel/graphs/3NB/xenium_subgraph3NB{nroots}_aug2023/dmax{k}/min10/logs/{vname}_50_embeddings_{TMA}.log"
     params:
