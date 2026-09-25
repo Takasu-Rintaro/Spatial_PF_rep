@@ -69,7 +69,7 @@ logger.info(str(barcodes_df.head(2)))
 
 xenium_gene_panel = pd.read_csv(xenium_gene_panel)
 # xenium_gene_panel
-tagList_df = pd.DataFrame(np.unique(xenium_gene_panel.x.values),
+tagList_df = pd.DataFrame(np.unique(xenium_gene_panel["gene_name"].values),
                          columns=['gene'])
 logger.info("gene panel "+ str(tagList_df.head(3)))
 logger.info(str(tagList_df.shape))

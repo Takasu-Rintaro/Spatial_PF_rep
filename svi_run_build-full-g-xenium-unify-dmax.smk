@@ -9,7 +9,7 @@ TMAs = ["TMA1","TMA1","TMA3","TMA4","TMA2","TMA2","TMA2","TMA1","TMA1","TMA1","T
 
 #scratch_dir= "/data/scratch/projects/punim0741/"
 raw_detected_tx_dir = "/Spatial_PF_rep/data/"
-scratch_ln = "scratch_ln/"
+scratch_ln = "/Spatial_PF_rep/scratch_ln/"
 rule all:
     input:
         expand(expand(["output/xenium/fullPanel/graphs/3NB/xenium_subgraph3NB{nroots}_aug2023/dmax{k}/min10/{{vname}}_50_embeddings_{{TMA}}.npy"],nroots=5000,k=3.0),zip,vname=samples, TMA=TMAs)
@@ -43,7 +43,7 @@ rule build_fulllgraph_bydmax:
     input:
         script = "code/svi_buildFullGraph_input_dmax.py",
         fullpn = get_csv,
-        xenium_gene_panel = "output/xenium/xenium_gene_panel.csv"
+        xenium_gene_panel = "data/gene_panel.csv"
     output:
         fullgraph = temp(scratch_ln+"xenium_fullpanel_graphs_aug2023/dmax{k}/{vname}_{TMA}_dmax{k}.gpickle"),
         fullgraph_meta = scratch_ln+"xenium_fullpanel_graphs_aug2023/dmax{k}/{vname}_{TMA}_dmax{k}.node_meta.csv",
