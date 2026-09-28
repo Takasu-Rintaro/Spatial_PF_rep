@@ -1,15 +1,17 @@
 ## run subgraphs for each Xenium csv file with full list of genes
 
-samples = ["VUILD96LF","VUHD116A","VUILD115","VUILD91LF","VUILD104MF","VUILD48MF","VUILD105LF","VUILD107MF","VUHD116B","VUILD102LF",
-           "VUHD095","VUILD102MF","VUILD48LF","VUILD106","VUILD91MF","VUHD113","VUILD104LF",
-           "VUILD78MF","THD0011","VUILD96MF","VUHD069","VUILD78LF","TILD117MF","TILD117LF","TILD175","VUILD110","THD0008","VUILD105MF"]
+# The repository contains GEO exports named differently from the original
+# "{sample}_{TMA}_detected_transcripts.csv" inputs. Use every CSV in datasets/
+# directly and keep its filename stem as the sample identifier.
+dataset_ids = glob_wildcards("datasets/{dataset}.csv").dataset
+if not dataset_ids:
+    raise FileNotFoundError("No transcript CSV files found under datasets/")
 
-TMAs = ["TMA1","TMA1","TMA3","TMA4","TMA2","TMA2","TMA2","TMA1","TMA1","TMA1","TMA2","TMA1","TMA2","TMA3","TMA4","TMA2","TMA2","TMA4","TMA4",
-        "TMA1","TMA2","TMA4","TMA4","TMA4","TMA4","TMA3","TMA3","TMA2"]
+samples = dataset_ids
+TMAs = ["dataset"] * len(samples)
 
-#scratch_dir= "/data/scratch/projects/punim0741/"
-raw_detected_tx_dir = "/Spatial_PF_rep/data/"
-scratch_ln = "/Spatial_PF_rep/scratch_ln/"
+raw_detected_tx_dir = "datasets/"
+scratch_ln = "scratch_ln/"
 rule all:
     input:
         expand(expand(["output/xenium/fullPanel/graphs/3NB/xenium_subgraph3NB{nroots}_aug2023/dmax{k}/min10/{{vname}}_50_embeddings_{{TMA}}.npy"],nroots=5000,k=3.0),zip,vname=samples, TMA=TMAs)
@@ -20,7 +22,8 @@ def get_mem_mb_merge(wildcards, attempt):
     return 320000 + attempt * 40000
 
 def get_mem_mb_large(wildcards, attempt):
-    if wildcards.vname == ("VUILD115") or wildcards.vname == ("VUILD106") or wildcards.vname == ("VUILD110") or wildcards.vname == ("THD0008"): 
+    large_samples = ("VUILD115", "VUILD106", "VUILD110", "THD0008")
+    if any(sample in wildcards.vname for sample in large_samples):
         return 160000 + attempt * 40000
     else:
         return 20000 + attempt * 40000
@@ -32,11 +35,11 @@ def get_mem_mb_training(wildcards, attempt):
         return 55000 + attempt * 20000
 
 def get_csv(wildcards):
-    file_name = raw_detected_tx_dir + wildcards.vname+"_"+wildcards.TMA+"_detected_transcripts.csv" 
+    file_name = raw_detected_tx_dir + wildcards.vname + ".csv"
     return file_name
 
 
-## fullPanelQC/{vname}_{TMA}_detected_transcripts.csv", after filtering out QV < 20
+## datasets/{vname}.csv, after filtering out QV < 20
 
 ## build the mRNA transcript graph per sample where each node represents one detected transcript, edges are added between two nodes if their spatial distance is < 3.0
 rule build_fulllgraph_bydmax:

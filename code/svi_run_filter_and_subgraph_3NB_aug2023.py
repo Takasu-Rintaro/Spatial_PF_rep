@@ -95,7 +95,17 @@ logger.info('First 5  node label' + str(list(g.nodes())[0:5]))
 logger.info("Generate 3NB subgraphs of sampled root nodes")
 
 set_seed(100)
-number_roots = num_root_nodes
+if g.number_of_nodes() == 0:
+    raise ValueError("Cannot sample root nodes from an empty graph")
+
+number_roots = min(num_root_nodes, g.number_of_nodes())
+if number_roots < num_root_nodes:
+    logger.warning(
+        "Requested %d root nodes but graph has only %d; using %d",
+        num_root_nodes,
+        g.number_of_nodes(),
+        number_roots,
+    )
 logger.info('Sampling number of root nodes ' + str(number_roots))
 
 selected_roots = random.sample(g.nodes,number_roots)
