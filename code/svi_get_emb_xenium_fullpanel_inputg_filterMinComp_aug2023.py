@@ -9,6 +9,7 @@ import tensorrt
 print(tensorrt.__version__)
 
 import numpy as np
+import numpy_compat
 import random as rn
 
 np.random.seed(42)
@@ -56,6 +57,7 @@ import logging
 import builtins
 import os
 import shutil
+from graph_io import read_gpickle
 ## file.py num_walks, num_root_nodes, number_of_samples1, number_of_samples2,buildGraph: (KNN/radius), output_dir
 #now we will Create and configure logger 
 
@@ -97,7 +99,7 @@ logger.info('number_of_samples1 '+str(number_of_samples1))
 logger.info('number_of_samples2 '+str(number_of_samples2))
 
 
-g = nx.read_gpickle(gpickle)
+g = read_gpickle(gpickle)
 ## graph meta saved before. In subsetXeniumGraphFullPanel.py
 graph_meta = pd.read_csv(gpickle_meta)
 
@@ -110,8 +112,34 @@ assert(list(g.nodes())[-1] == (graph_meta.shape[0]-1))
 
 logger.info("loading saved trained model dir" + str(trained_model))
 
-embedding_model = keras.models.load_model(trained_model,
-                                          custom_objects={'AttentionalAggregator':AttentionalAggregator})
+feature_dim = len(g.nodes[list(g.nodes())[0]]["feature"])
+class SavedEmbedding(keras.layers.Layer):
+    def __init__(self, model_path):
+        super().__init__()
+        self._saved_model = tf.saved_model.load(model_path)
+        self._signature = self._saved_model.signatures[
+            "serving_default"
+        ]
+
+    def call(self, inputs):
+        return self._signature(
+            keras_tensor=inputs[0],
+            keras_tensor_1=inputs[1],
+            keras_tensor_2=inputs[2],
+        )["output_0"]
+
+
+embedding_layer = SavedEmbedding(trained_model)
+embedding_inputs = [
+    keras.Input(shape=(1, feature_dim), name="keras_tensor"),
+    keras.Input(shape=(number_of_samples1, feature_dim), name="keras_tensor_1"),
+    keras.Input(
+        shape=(number_of_samples1 * number_of_samples2, feature_dim),
+        name="keras_tensor_2",
+    ),
+]
+embedding_outputs = embedding_layer(embedding_inputs)
+embedding_model = keras.Model(embedding_inputs, embedding_outputs)
 
 
 embedding_model.compile(
@@ -155,17 +183,35 @@ else:
     g = sg.StellarGraph.from_networkx(g,node_features="feature")
     logger.info("Changed to stellargraph class ")
 
-print(g.info())
-
-logger.info(str(g.info()))
+logger.info("Embedding graph nodes: %d", g.nodes().shape[0])
 
 
-batch_size = 100
+batch_size = 1000
 num_samples = [number_of_samples1, number_of_samples2]
 
 node_ids = g.nodes()
-node_gen = GraphSAGENodeGenerator(g, batch_size, num_samples).flow(node_ids)
-node_embeddings = embedding_model.predict(node_gen, workers=4, verbose=1)
+class Keras3NodeSequence(keras.utils.Sequence):
+    def __init__(self, sequence):
+        self.sequence = sequence
+
+    def __len__(self):
+        return len(self.sequence)
+
+    def __getitem__(self, index):
+        inputs, _ = self.sequence[index]
+        return tuple(inputs)
+
+
+node_gen = Keras3NodeSequence(
+    GraphSAGENodeGenerator(g, batch_size, num_samples).flow(node_ids)
+)
+node_embeddings = np.concatenate(
+    [
+        embedding_model(tuple(node_gen[index]), training=False).numpy()
+        for index in tqdm(range(len(node_gen)), desc="Embedding nodes")
+    ],
+    axis=0,
+)
 logger.info("saving output embedding to "+outnpy)
 
 np.save(outnpy,node_embeddings)

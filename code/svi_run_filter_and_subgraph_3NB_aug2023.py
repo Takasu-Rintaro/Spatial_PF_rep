@@ -6,6 +6,7 @@
 import tensorflow
 import tensorrt
 import numpy as np
+import numpy_compat
 import random as rn
 
 np.random.seed(42)
@@ -46,6 +47,7 @@ import sys
 import logging 
 import builtins
 import shutil
+from graph_io import read_gpickle, write_gpickle
 
 logging.basicConfig(filename=sys.argv[7], 
                         format='%(asctime)s %(message)s', 
@@ -84,7 +86,7 @@ def filterGraph(G,min_n):
 
 logger.info('Filtering graph' + samplename)
 logger.info('Removed comps smaller than ' + str(comp_min_n))
-g = nx.read_gpickle(full_graph_g)
+g = read_gpickle(full_graph_g)
 logger.info("full_graph_g number_of_nodes() " + str(g.number_of_nodes()))
 logger.info('First 5 node label' + str(list(g.nodes())[0:5]))
 
@@ -108,7 +110,7 @@ if number_roots < num_root_nodes:
     )
 logger.info('Sampling number of root nodes ' + str(number_roots))
 
-selected_roots = random.sample(g.nodes,number_roots)
+selected_roots = random.sample(list(g.nodes), number_roots)
 
 three_hop_nbrs = [nx.dfs_edges(g,n,3) for n in selected_roots]
 
@@ -139,7 +141,7 @@ nx.relabel_nodes(subgraph,mapping =mapIdInt,copy=False)
 
 logger.info('Saving the subgraph with node id starting 0 ')
 
-nx.write_gpickle(subgraph,gpickle)
+write_gpickle(subgraph, gpickle)
 
 logger.info('Finished saving the subgraph with node id starting to ' + gpickle)
 

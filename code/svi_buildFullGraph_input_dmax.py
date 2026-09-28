@@ -4,6 +4,7 @@
 import tensorflow
 import tensorrt
 import numpy as np
+import numpy_compat
 import random as rn
 
 np.random.seed(42)
@@ -31,6 +32,7 @@ import logging
 import builtins
 import os
 import shutil
+from graph_io import write_gpickle
 
 logging.basicConfig(filename=sys.argv[9], 
                         format='%(asctime)s %(message)s', 
@@ -123,7 +125,7 @@ logger.info('Graph with nodes: ' + str(g.number_of_nodes()))
 
 logger.info('First 5 node label' + str(list(g.nodes())[0:5]))
 logger.info('Writing full graph to ' + out_gpickle)
-nx.write_gpickle(g,out_gpickle)
+write_gpickle(g, out_gpickle)
 
 logger.info('Writing graph meta ' + fullgraph_meta_csv)
 

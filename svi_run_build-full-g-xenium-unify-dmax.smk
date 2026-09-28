@@ -1,5 +1,8 @@
 ## run subgraphs for each Xenium csv file with full list of genes
 
+import os
+import sys
+
 # The repository contains GEO exports named differently from the original
 # "{sample}_{TMA}_detected_transcripts.csv" inputs. Use every CSV in datasets/
 # directly and keep its filename stem as the sample identifier.
@@ -7,11 +10,21 @@ dataset_ids = glob_wildcards("datasets/{dataset}.csv").dataset
 if not dataset_ids:
     raise FileNotFoundError("No transcript CSV files found under datasets/")
 
+sample_limit = int(config.get("sample_limit", 0))
+if sample_limit < 0:
+    raise ValueError("sample_limit must be zero or a positive integer")
+if sample_limit:
+    dataset_ids = sorted(
+        dataset_ids,
+        key=lambda dataset: os.path.getsize(f"datasets/{dataset}.csv"),
+    )[:sample_limit]
+
 samples = dataset_ids
 TMAs = ["dataset"] * len(samples)
 
 raw_detected_tx_dir = "datasets/"
 scratch_ln = "scratch_ln/"
+python_exec = sys.executable
 rule all:
     input:
         expand(expand(["output/xenium/fullPanel/graphs/3NB/xenium_subgraph3NB{nroots}_aug2023/dmax{k}/min10/{{vname}}_50_embeddings_{{TMA}}.npy"],nroots=5000,k=3.0),zip,vname=samples, TMA=TMAs)
@@ -61,7 +74,7 @@ rule build_fulllgraph_bydmax:
         gpus =0 
     shell:
         """
-            python -u {input.script} {wildcards.vname} {wildcards.TMA} {input.fullpn} {input.xenium_gene_panel} \
+            {python_exec} -u {input.script} {wildcards.vname} {wildcards.TMA} {input.fullpn} {input.xenium_gene_panel} \
             {output.fullgraph_meta} {output.n_connected_comps} {wildcards.k} {output.fullgraph} {params.text_log} 2>> {log}
         """
 
@@ -84,7 +97,7 @@ rule filter_compoments_and_subgraph:
         gpus = 0
     shell:
         """
-            python {input.script} {wildcards.vname} {input.full_graph} {params.remove_comp_min_n} {wildcards.nroots} {output.subgraph3NB} {output.subgraph3NB_rootnodesID} {params.text_log} 2>> {log}
+            {python_exec} {input.script} {wildcards.vname} {input.full_graph} {params.remove_comp_min_n} {wildcards.nroots} {output.subgraph3NB} {output.subgraph3NB_rootnodesID} {params.text_log} 2>> {log}
 
         """
 
@@ -111,8 +124,8 @@ rule merge_subgraphs:
         textlog = "output/xenium/fullPanel/graphs/logs/3NB/xenium_subgraph3NB{nroots}_aug2023/dmax{k}/mergeSubGraphsToSG.log.txt"
     shell:
         """
-            export LD_LIBRARY_PATH="/mnt/beegfs/mccarthy/backed_up/general/rlyu/Software/mambaForge/mambaforge/envs/graphsageAug/lib/python3.8/site-packages/tensorrt/:$LD_LIBRARY_PATH"
-            python -u {input.script} {output.sg_merge} {params.subgraphs} {params.rootID_csvs} {output.rootID_reindex} {params.textlog} 2>> {log}
+            export LD_LIBRARY_PATH="/mnt/beegfs/mccarthy/backed_up/general/rlyu/Software/mambaForge/mambaforge/envs/graphsageAug/lib/python3.8/site-packages/tensorrt/:${{LD_LIBRARY_PATH:-}}"
+            {python_exec} -u {input.script} {output.sg_merge} {params.subgraphs} {params.rootID_csvs} {output.rootID_reindex} {params.textlog} 2>> {log}
 
         """   
 # ## prepared sg graph union from all 
@@ -143,9 +156,9 @@ rule trainUsingMergedgraph:
         "output/xenium/fullPanel/graphs/3NB/xenium_subgraph3NB{nroots}_aug2023/dmax{k}/model_training_dmax{k}.log"
     shell:
         """
-           export LD_LIBRARY_PATH="/mnt/beegfs/mccarthy/backed_up/general/rlyu/Software/mambaForge/mambaforge/envs/graphsageAug/lib/python3.8/site-packages/tensorrt/:$LD_LIBRARY_PATH"
+           export LD_LIBRARY_PATH="/mnt/beegfs/mccarthy/backed_up/general/rlyu/Software/mambaForge/mambaforge/envs/graphsageAug/lib/python3.8/site-packages/tensorrt/:${{LD_LIBRARY_PATH:-}}"
 
-           python -u {input.script} {params.number_of_walks} {params.num_length}  {params.number_of_samples1}  {params.number_of_samples2}  {input.gpickle} {params.number_epoch} \
+           {python_exec} -u {input.script} {params.number_of_walks} {params.num_length}  {params.number_of_samples1}  {params.number_of_samples2}  {input.gpickle} {params.number_epoch} \
            {params.trained_model} {params.trained_emModel} {input.rootids} {params.text_log} 2>> {log}
 
         """
@@ -176,7 +189,7 @@ rule embedd_graph:
         min_comp = 10
     shell:
         """
-           python -u {input.script} {wildcards.vname} {wildcards.TMA} {output.npy} {output.node_meta_min10} \
+           {python_exec} -u {input.script} {wildcards.vname} {wildcards.TMA} {output.npy} {output.node_meta_min10} \
             {params.trained_emModel} {input.full_g} {input.full_g_csv} {params.number_of_samples1} {params.number_of_samples2} {params.min_comp} {params.textlog} 2>> {log}
 
         """

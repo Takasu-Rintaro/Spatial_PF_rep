@@ -9,6 +9,7 @@
 import tensorflow
 import tensorrt
 import numpy as np
+import numpy_compat
 import random as rn
 
 from tensorflow.keras import backend as K
@@ -55,6 +56,7 @@ import sys
 import logging 
 import builtins
 import shutil
+from graph_io import read_gpickle
 ## file.py num_walks, num_root_nodes, number_of_samples1, number_of_samples2,buildGraph: (KNN/radius), output_dir
 #now we will Create and configure logger 
 
@@ -89,8 +91,8 @@ logger.info(str(sys.argv))
 print('GPU name: ', tensorflow.config.experimental.list_physical_devices("GPU"))
 
 logger.info("reading gpickle " +gpickle )
-joined_g_10k_roots  = nx.read_gpickle(gpickle)
-logger.info(str(joined_g_10k_roots.info()))
+joined_g_10k_roots = read_gpickle(gpickle)
+logger.info("Training graph nodes: %d", joined_g_10k_roots.nodes().shape[0])
 
 root_nodes_as_int = pd.read_csv(sampled_roots_toIntcsv)
 
@@ -107,7 +109,21 @@ layer_sizes = [50, 50]
 
 
 generator = GraphSAGELinkGenerator(joined_g_10k_roots, batch_size, num_samples)
-train_gen = generator.flow(unsupervised_samples)
+
+
+class Keras3Sequence(keras.utils.Sequence):
+    def __init__(self, sequence):
+        self.sequence = sequence
+
+    def __len__(self):
+        return len(self.sequence)
+
+    def __getitem__(self, index):
+        inputs, labels = self.sequence[index]
+        return tuple(inputs), labels
+
+
+train_gen = Keras3Sequence(generator.flow(unsupervised_samples))
 
 # In[39]:
 graphsage = GraphSAGE(
@@ -150,8 +166,6 @@ history = model.fit(
     train_gen,
     epochs=number_epoch,
     verbose=1,
-    use_multiprocessing=True,
-    workers=4,
     shuffle=True
 )
 
@@ -164,15 +178,18 @@ logger.info(str(history.history))
 # In[ ]:
 
 
-# Save the weights
-model.save(trained_model)
+# Export TensorFlow SavedModels for the existing Snakemake output layout.
+model.export(trained_model)
 
 ## change the input/output size before saving the model
 x_inp_src = x_inp[0::2]
 x_out_src = x_out[0]
 embedding_model = keras.Model(inputs=x_inp_src, outputs=x_out_src)
 
-embedding_model.save(trained_emModel)
+embedding_model.export(trained_emModel)
+# Keep a native Keras copy for Keras 3, which cannot load SavedModel
+# directories through keras.models.load_model().
+embedding_model.save(trained_emModel.rstrip(os.sep) + ".keras")
 
 
 logger.info(str(embedding_model.summary()))

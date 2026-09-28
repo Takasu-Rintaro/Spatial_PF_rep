@@ -5,6 +5,7 @@
 import tensorflow
 import tensorrt
 import numpy as np
+import numpy_compat
 import random as rn
 
 np.random.seed(42)
@@ -46,6 +47,7 @@ import sys
 import logging 
 import builtins
 import shutil
+from graph_io import read_gpickle, write_gpickle
 
 logging.basicConfig(filename=sys.argv[5], 
                         format='%(asctime)s %(message)s', 
@@ -72,7 +74,7 @@ rootsID_csvs = rootsIDs.split(",")
 last_graph_n = 0
 for subg_g,subg_rootnode in zip(subgraphs,rootsID_csvs):
     logger.info(subg_rootnode)
-    g = nx.read_gpickle(subg_g)
+    g = read_gpickle(subg_g)
     rootsID = pd.read_csv(subg_rootnode)
     nx.relabel_nodes(g, lambda x: x + last_graph_n,copy=False)
     logger.info("last_graph_n "+ str(last_graph_n))
@@ -104,11 +106,10 @@ logger.info("number of nodes in joined graph "+str(large_g_roots.number_of_nodes
 logger.info("Converting to stellargraph class ")
 large_g_roots = sg.StellarGraph(large_g_roots, node_features="feature")
 logger.info("Converted to sg  graph ")
-
-logger.info(large_g_roots.info())
+logger.info("Merged StellarGraph nodes: %d", large_g_roots.nodes().shape[0])
 
 logger.info("Saving to sg graph " + output_gpickle)
 
-nx.write_gpickle(large_g_roots,output_gpickle)
+write_gpickle(large_g_roots, output_gpickle)
 logger.info("save reindex roots id to " + merged_reindex_rootsID)
 rootsID_df.to_csv(merged_reindex_rootsID)

@@ -1,0 +1,13 @@
+# Python 3.12 runtime dependencies for the Xenium graph workflow.
+numpy>=2,<2.8
+scipy>=1.11,<2
+pandas>=2.0,<4
+matplotlib>=3.7,<4
+tqdm>=4.65,<5
+scikit-learn>=1.3,<2
+networkx>=3.0,<4
+tensorflow[and-cuda]>=2.16,<2.22
+tensorrt>=10,<12
+stellargraph==1.2.1
+chardet>=5.0,<6
+snakemake>=9,<10
