@@ -29,3 +29,23 @@ For a small GPU test run, select the smallest transcript dataset:
 The input files are discovered from their filename stems, so the GEO
 filenames do not need to be renamed. Intermediate graph files are written
 under `scratch_ln/`, and embeddings are written under `output/`.
+
+## Run all 45 samples with Slurm
+
+The current workflow combines all samples during the merge step, so submit it
+as one job rather than as 45 independent array jobs. Review the partition,
+account, memory, and time settings in
+[`run_snakemake_45.sbatch`](run_snakemake_45.sbatch) for your cluster, then
+submit:
+
+```bash
+sbatch run_snakemake_45.sbatch
+```
+
+`sample_limit=0` means that every CSV under `datasets/` is processed. Monitor
+the job with:
+
+```bash
+squeue --job <JOB_ID>
+tail -f slurm-spatial-pf-45-<JOB_ID>.out
+```
