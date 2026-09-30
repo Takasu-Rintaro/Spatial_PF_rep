@@ -49,3 +49,7 @@ the job with:
 squeue --job <JOB_ID>
 tail -f slurm-spatial-pf-45-<JOB_ID>.out
 ```
+
+For the 128 GB node configuration, `run_snakemake_45.sbatch` currently uses
+`max_dataset_bytes=1000000000`, excluding CSV files larger than 1 GB to avoid
+out-of-memory failures during graph construction.

@@ -13,6 +13,17 @@ if not dataset_ids:
 sample_limit = int(config.get("sample_limit", 0))
 if sample_limit < 0:
     raise ValueError("sample_limit must be zero or a positive integer")
+max_dataset_bytes = int(config.get("max_dataset_bytes", 0))
+if max_dataset_bytes < 0:
+    raise ValueError("max_dataset_bytes must be zero or a positive integer")
+if max_dataset_bytes:
+    dataset_ids = [
+        dataset
+        for dataset in dataset_ids
+        if os.path.getsize(f"datasets/{dataset}.csv") <= max_dataset_bytes
+    ]
+    if not dataset_ids:
+        raise ValueError("No datasets match max_dataset_bytes")
 if sample_limit:
     dataset_ids = sorted(
         dataset_ids,
@@ -28,7 +39,7 @@ python_exec = sys.executable
 rule all:
     input:
         expand(expand(["output/xenium/fullPanel/graphs/3NB/xenium_subgraph3NB{nroots}_aug2023/dmax{k}/min10/{{vname}}_50_embeddings_{{TMA}}.npy"],nroots=5000,k=3.0),zip,vname=samples, TMA=TMAs)
-
+#ここでどのくらいのメモリが必要なのかの目安をつけるために、各ルールのメモリ使用量を計算する関数を定義していた。
 def get_mem_mb(wildcards, attempt):
     return 20000 + attempt * 40000
 def get_mem_mb_merge(wildcards, attempt):
