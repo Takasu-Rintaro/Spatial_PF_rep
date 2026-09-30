@@ -53,3 +53,18 @@ tail -f slurm-spatial-pf-45-<JOB_ID>.out
 For the 128 GB node configuration, `run_snakemake_45.sbatch` currently uses
 `max_dataset_bytes=1000000000`, excluding CSV files larger than 1 GB to avoid
 out-of-memory failures during graph construction.
+
+
+
+# やったこと
+ ニッチの作成を可能な限り再現しようとした
+# 元論文
+ Spatial transcriptomics identifies molecular niche dysregulation associated with distal lung remodeling in pulmonary fibrosis https://doi.org/10.1038/s41588-025-02080-x
+
+# データを復活させるためには
+https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE250346
+ここからデータを一式ダウンロードする
+　git cloneを行った後にfiletree.txtを参考にしてdata,dataset,clustering_datasetsを復元する
+https://doi.org/10.1038/s41588-025-02080-x
+これのRAWデータからデータを引っ張ってくる
+

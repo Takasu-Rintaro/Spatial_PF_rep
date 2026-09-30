@@ -1,0 +1,158 @@
+.
+├── GMM_clustering.py
+├── README.md
+├── __pycache__
+│   └── GMM_clustering.cpython-312.pyc
+├── chat.md
+├── clustering_datasets
+│   ├── GSM7990539_VUHD113_50_embeddings.npy
+│   ├── GSM7990539_VUHD113_50_embeddings_labels.csv
+│   ├── GSM7990539_VUHD113_50_embeddings_labels.npy
+│   ├── GSM7990539_VUHD113_50_embeddings_labels_with_coordinates.csv
+│   ├── GSM7990539_VUHD113_50_embeddings_labels_with_coordinates_rna.csv
+│   ├── GSM7990539_VUHD113_50_embeddings_labels_with_coordinates_rna_clusters.png
+│   └── GSM7990539_VUHD113_node_meta.csv
+├── code
+│   ├── __pycache__
+│   │   ├── graph_io.cpython-312.pyc
+│   │   └── numpy_compat.cpython-312.pyc
+│   ├── graph_io.py
+│   ├── numpy_compat.py
+│   ├── svi_buildFullGraph_input_dmax.py
+│   ├── svi_get_emb_xenium_fullpanel_inputg_filterMinComp_aug2023.py
+│   ├── svi_run_filter_and_subgraph_3NB_aug2023.py
+│   ├── svi_run_merge_subgraphs_xenium_aug2023.py
+│   └── svi_run_training_subgraphs_xenium_fullpanel.py
+├── data
+│   └── gene_panel.csv
+├── datasets
+│   ├── GSM7990532_output-XETG00048__0003392__THD0008__20230313__191400_transcripts.csv
+│   ├── GSM7990533_output-XETG00048__0003400__THD0011__20230313__191400_transcripts.csv
+│   ├── GSM7990534_output-XETG00048__0003400__TILD117MA1__20230313__191400_transcripts.csv
+│   ├── GSM7990535_output-XETG00048__0003400__TILD117LA__20230313__191400_transcripts.csv
+│   ├── GSM7990536_output-XETG00048__0003400__TILD175MA__20230313__191400_transcripts.csv
+│   ├── GSM7990537_output-XETG00048__0003789__VUHD069__20230308__003731_transcripts.csv
+│   ├── GSM7990538_output-XETG00048__0003789__VUHD095__20230308__003731_transcripts.csv
+│   ├── GSM7990539_output-XETG00048__0003789__VUHD113__20230308__003731_transcripts.csv
+│   ├── GSM7990540_output-XETG00048__0003817__VUHD116A__20230308__003730_transcripts.csv
+│   ├── GSM7990541_output-XETG00048__0003817__VUHD116B__20230308__003731_transcripts.csv
+│   ├── GSM7990542_output-XETG00048__0003817__VUILD102MA__20230308__003730_transcripts.csv
+│   ├── GSM7990543_output-XETG00048__0003817__VUILD102LA__20230308__003731_transcripts.csv
+│   ├── GSM7990544_output-XETG00048__0003789__VUILD104MA2__20230308__003731_transcripts.csv
+│   ├── GSM7990545_output-XETG00048__0003789__VUILD104MA1__20230308__003731_transcripts.csv
+│   ├── GSM7990546_output-XETG00048__0003789__VUILD105MA2__20230308__003731_transcripts.csv
+│   ├── GSM7990547_output-XETG00048__0003789__VUILD105MA1__20230308__003731_transcripts.csv
+│   ├── GSM7990548_output-XETG00048__0003392__VUILD106MA__20230313__191400_transcripts.csv
+│   ├── GSM7990549_output-XETG00048__0003817__VUILD107MA__20230308__003731_transcripts.csv
+│   ├── GSM7990550_output-XETG00048__0003392__VUILD110LA__20230313__191400_transcripts.csv
+│   ├── GSM7990551_output-XETG00048__0003392__VUILD115MA__20230313__191400_transcripts.csv
+│   ├── GSM7990552_output-XETG00048__0003789__VUILD48LA2__20230308__003731_transcripts.csv
+│   ├── GSM7990553_output-XETG00048__0003789__VUILD48LA1__20230308__003731_transcripts.csv
+│   ├── GSM7990554_output-XETG00048__0003400__VUILD78MA__20230313__191400_transcripts.csv
+│   ├── GSM7990555_output-XETG00048__0003400__VUILD78LA__20230313__191400_transcripts.csv
+│   ├── GSM7990556_output-XETG00048__0003400__VUILD91MA__20230313__191400_transcripts.csv
+│   ├── GSM7990557_output-XETG00048__0003400__VUILD91LA__20230313__191400_transcripts.csv
+│   ├── GSM7990558_output-XETG00048__0003817__VUILD96MA__20230308__003730_transcripts.csv
+│   ├── GSM7990559_output-XETG00048__0003817__VUILD96LA__20230308__003730_transcripts.csv
+│   ├── GSM8505448_TILD028LA_transcripts.csv
+│   ├── GSM8505449_TILD049MA_transcripts.csv
+│   ├── GSM8505450_TILD080LA_transcripts.csv
+│   ├── GSM8505451_TILD111LA_transcripts.csv
+│   ├── GSM8505452_TILD113LA_transcripts.csv
+│   ├── GSM8505453_TILD117MA2_transcripts.csv
+│   ├── GSM8505454_TILD130LA_transcripts.csv
+│   ├── GSM8505455_TILD167LA_transcripts.csv
+│   ├── GSM8505456_TILD299MA_transcripts.csv
+│   ├── GSM8505457_TILD315MA_transcripts.csv
+│   ├── GSM8505458_VUHD038_transcripts.csv
+│   ├── GSM8505459_VUHD049_transcripts.csv
+│   ├── GSM8505460_VUHD090_transcripts.csv
+│   ├── GSM8505461_VUILD141MA_transcripts.csv
+│   ├── GSM8505462_VUILD142MA_transcripts.csv
+│   ├── GSM8505463_VUILD49LA_transcripts.csv
+│   └── GSM8505464_VUILD58MA_transcripts.csv
+├── file_tree.txt
+├── output
+│   └── xenium
+│       └── fullPanel
+│           └── graphs
+│               ├── 3NB
+│               │   └── xenium_subgraph3NB5000_aug2023
+│               │       └── dmax3.0
+│               │           ├── benchmarks
+│               │           │   └── model_training_dmax3.0.ben.txt
+│               │           ├── min10
+│               │           │   ├── GSM7990538_output-XETG00048__0003789__VUHD095__20230308__003731_transcripts_50_embeddings_dataset.npy
+│               │           │   ├── GSM7990538_output-XETG00048__0003789__VUHD095__20230308__003731_transcripts_dataset_node_meta.csv
+│               │           │   └── logs
+│               │           │       ├── GSM7990538_output-XETG00048__0003789__VUHD095__20230308__003731_transcripts_50_embeddings_dataset.ben.txt
+│               │           │       ├── GSM7990538_output-XETG00048__0003789__VUHD095__20230308__003731_transcripts_50_embeddings_dataset.log
+│               │           │       └── GSM7990538_output-XETG00048__0003789__VUHD095__20230308__003731_transcripts_dataset.get.fullp.logger.txt
+│               │           ├── model_training_dmax3.0.log
+│               │           ├── model_training_dmax3.0.txt
+│               │           └── saved_model
+│               │               ├── embmodel
+│               │               │   ├── assets
+│               │               │   ├── fingerprint.pb
+│               │               │   ├── saved_model.pb
+│               │               │   └── variables
+│               │               │       ├── variables.data-00000-of-00001
+│               │               │       └── variables.index
+│               │               ├── embmodel.keras
+│               │               └── model
+│               │                   ├── assets
+│               │                   ├── fingerprint.pb
+│               │                   ├── saved_model.pb
+│               │                   └── variables
+│               │                       ├── variables.data-00000-of-00001
+│               │                       └── variables.index
+│               ├── benchmarks
+│               │   └── xenium_subgraph3NB5000_aug2023
+│               │       └── dmax3.0
+│               │           └── mergeSubGraphsToSG_dmax3.0.benchmark.txt
+│               └── logs
+│                   ├── 3NB
+│                   │   └── xenium_subgraph3NB5000_aug2023
+│                   │       └── dmax3.0
+│                   │           ├── mergeSubGraphsToSG.log.txt
+│                   │           └── mergeSubGraphsToSG_dmax3.0.log
+│                   ├── xenium_fullpanel_graphs_aug2023
+│                   │   └── dmax3.0
+│                   │       ├── GSM7990536_output-XETG00048__0003400__TILD175MA__20230313__191400_transcripts_dataset_dmax3.0_buildFullGraph.log
+│                   │       ├── GSM7990536_output-XETG00048__0003400__TILD175MA__20230313__191400_transcripts_dataset_dmax3.0_buildFullGraph.log.txt
+│                   │       ├── GSM7990538_output-XETG00048__0003789__VUHD095__20230308__003731_transcripts_dataset_dmax3.0_buildFullGraph.log
+│                   │       ├── GSM7990538_output-XETG00048__0003789__VUHD095__20230308__003731_transcripts_dataset_dmax3.0_buildFullGraph.log.txt
+│                   │       ├── GSM7990541_output-XETG00048__0003817__VUHD116B__20230308__003731_transcripts_dataset_dmax3.0_buildFullGraph.log
+│                   │       ├── GSM7990541_output-XETG00048__0003817__VUHD116B__20230308__003731_transcripts_dataset_dmax3.0_buildFullGraph.log.txt
+│                   │       ├── GSM7990548_output-XETG00048__0003392__VUILD106MA__20230313__191400_transcripts_dataset_dmax3.0_buildFullGraph.log
+│                   │       ├── GSM7990548_output-XETG00048__0003392__VUILD106MA__20230313__191400_transcripts_dataset_dmax3.0_buildFullGraph.log.txt
+│                   │       ├── GSM8505462_VUILD142MA_transcripts_dataset_dmax3.0_buildFullGraph.log
+│                   │       └── GSM8505462_VUILD142MA_transcripts_dataset_dmax3.0_buildFullGraph.log.txt
+│                   └── xenium_subgraph3NB5000_aug2023
+│                       └── dmax3.0
+│                           ├── GSM7990538_output-XETG00048__0003789__VUHD095__20230308__003731_transcripts_dataset_dmax3.0.subgraph3NB.log
+│                           └── GSM7990538_output-XETG00048__0003789__VUHD095__20230308__003731_transcripts_dataset_dmax3.0.subgraph3NB.log.txt
+├── pycave.ipynb
+├── requirements.txt
+├── run_snakemake_45.sbatch
+├── scratch_ln
+│   ├── test.txt
+│   ├── xenium_fullpanel_graphs_aug2023
+│   │   └── dmax3.0
+│   │       ├── GSM7990538_output-XETG00048__0003789__VUHD095__20230308__003731_transcripts_dataset_dmax3.0.gpickle.components.csv
+│   │       ├── GSM7990538_output-XETG00048__0003789__VUHD095__20230308__003731_transcripts_dataset_dmax3.0.node_meta.csv
+│   │       ├── GSM7990541_output-XETG00048__0003817__VUHD116B__20230308__003731_transcripts_dataset_dmax3.0.gpickle
+│   │       ├── GSM7990541_output-XETG00048__0003817__VUHD116B__20230308__003731_transcripts_dataset_dmax3.0.gpickle.components.csv
+│   │       ├── GSM7990541_output-XETG00048__0003817__VUHD116B__20230308__003731_transcripts_dataset_dmax3.0.node_meta.csv
+│   │       ├── GSM8505462_VUILD142MA_transcripts_dataset_dmax3.0.gpickle
+│   │       ├── GSM8505462_VUILD142MA_transcripts_dataset_dmax3.0.gpickle.components.csv
+│   │       └── GSM8505462_VUILD142MA_transcripts_dataset_dmax3.0.node_meta.csv
+│   └── xenium_subgraph3NB5000_aug2023
+│       └── dmax3.0
+│           ├── GSM7990538_output-XETG00048__0003789__VUHD095__20230308__003731_transcripts_dataset_dmax3.0.subgraph3NB.gpickle
+│           ├── GSM7990538_output-XETG00048__0003789__VUHD095__20230308__003731_transcripts_dataset_dmax3.0.subgraph3NB.rootNodesID.csv
+│           ├── merged_int_subgraph_sg_dmax3.0.gpickle
+│           └── merged_int_subgraph_sg_dmax3.0_rootIDs.csv
+└── svi_run_build-full-g-xenium-unify-dmax.smk
+
+40 directories, 116 files
