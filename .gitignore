@@ -4,5 +4,6 @@ output
 scratch_ln
 .snakemake
 .venv
+clustering_datasets
 
 
